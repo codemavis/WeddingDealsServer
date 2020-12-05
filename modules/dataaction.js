@@ -19,7 +19,7 @@ exports.dataGet = async(fileName, dataObj) => {
     keys = keys.replace(',', '');
     values = values.replace(',', '');
 
-    return `INSERT INTO ${fileName} (${keys}) VALUES (${values})`;
+    return `INSERT INTO ${fileName} (${keys}) VALUES (${values}) RETURNING *`; // 
 }
 
 
@@ -60,13 +60,14 @@ exports.compareHash = async(str, compStr) => {
 
 exports.authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
+    console.log('authHeader', authHeader)
     const token = authHeader && authHeader.split(' ')[1];
-    if (token == null) return res.sendStatus(401);
+
+    if (token == null) return res.status(401).send({ code: 'ERROR', message: 'Unauthorized user, invalid token' });
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
+        if (err) return res.sendStatus(403).send({ code: 'ERROR', message: 'Token not verified' });
         req.user = user;
-        next()
-
+        next();
     });
 }

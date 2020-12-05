@@ -12,9 +12,9 @@ exports.create = async(req, res) => {
 
         let qStr = await dataAction.dataGet(fileName, objEntity);
         let newEntity = await client.query(qStr);
-        res.json(`${newEntity.rowCount} row/s affected`);
+        res.json({ code: 'OK', message: 'Saved Successfully', recordid: newEntity.rows[0].recordid });
     } catch (err) {
-        console.log('error', err.message);
+        console.log('create error', err.message);
         res.status(500).send();
     }
 }
@@ -24,7 +24,7 @@ exports.findAll = async(req, res) => {
         let result = await client.query(`SELECT * FROM ${fileName} ORDER BY recordid`);
         res.send(result.rows);
     } catch (err) {
-        console.log('error', err.message);
+        console.log('findAll error', err.message);
     }
 }
 
@@ -33,7 +33,7 @@ exports.findOne = async(req, res) => {
         let result = await client.query(`SELECT * FROM ${fileName} WHERE recordid = ${req.params.entityid}`);
         res.send(result.rows[0]);
     } catch (err) {
-        console.log('error', err.message);
+        console.log('findOne error', err.message);
     }
 }
 
@@ -42,7 +42,7 @@ exports.findOneByEmail = async(email) => {
         let result = await client.query(`SELECT * FROM ${fileName} WHERE email = '${email}'`);
         return await result.rows[0];
     } catch (err) {
-        console.log('error', err.message);
+        console.log('findOneByEmail error', err.message);
         return err.message;
     }
 }
@@ -56,12 +56,22 @@ exports.update = async(req, res) => {
         }
 
     } catch (err) {
-        console.log('error', err.message);
+        console.log('update error', err.message);
     }
 }
 
 exports.delete = (req, res) => {
     res.send({ list: customers });
+}
+
+exports.findCurrent = (req, res) => {
+    try {
+        console.log('req.user', req.user);
+        res.send({ code: 'OK', message: 'Success', user: req.user });
+    } catch (error) {
+        console.log('findCurrent error', err.message);
+        res.send({ code: 'ERROR', message: err.message, user: null });
+    }
 }
 
 const dataLog = async() => {

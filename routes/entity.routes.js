@@ -3,7 +3,7 @@ const express = require("express");
 let router = express.Router();
 
 const dataAction = require('../modules/dataaction');
-const customers = require('../controllers/entity.controller');
+const entity = require('../controllers/entity.controller');
 
 router.use((req, res, next) => {
     console.log(req.url, '@', Date.now());
@@ -12,18 +12,24 @@ router.use((req, res, next) => {
 
 router
     .route('/')
-    .get(dataAction.authenticateToken, customers.findAll)
-    .post(customers.create); //Register
+    .get(dataAction.authenticateToken, entity.findAll)
+    .post(entity.create); //Register
+
+router
+    .route('/user')
+    .get(dataAction.authenticateToken, entity.findCurrent)
 
 router
     .route('/:entityid')
-    .get(dataAction.authenticateToken, customers.findOne)
-    .put(dataAction.authenticateToken, customers.update)
-    .delete(dataAction.authenticateToken, customers.delete);
+    .get(dataAction.authenticateToken, entity.findOne)
+    .put(dataAction.authenticateToken, entity.update)
+    .delete(dataAction.authenticateToken, entity.delete);
 
 router
     .route('/email/:emailid')
-    .get(customers.findOneByEmail) //For login
+    .get(entity.findOneByEmail) //For login
+
+
 
 
 module.exports = router;
